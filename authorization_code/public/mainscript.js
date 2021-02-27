@@ -33,7 +33,7 @@ else if(navigator.getUserMedia) { // Standard
 }
 */
 define(function (require) {
-    const vision = require(['/../../node_modules/@google-cloud/vision']);
+    const vision = require(['@google-cloud/vision']);
 })
 
 //const client = new vision.ImageAnnotatorClient();
