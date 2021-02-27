@@ -32,8 +32,10 @@ else if(navigator.getUserMedia) { // Standard
     }, errBack);
 }
 */
+define(function (require) {
+    const vision = require(['/../../node_modules/@google-cloud/vision']);
+})
 
-//const vision = require('@google-cloud/vision');
 //const client = new vision.ImageAnnotatorClient();
 // Elements for taking the snapshot
 
@@ -48,28 +50,32 @@ else if(navigator.getUserMedia) { // Standard
 
 const img = new Image();
 // Trigger photo take
-document.getElementById("snap").addEventListener("click", function() {
+document.getElementById("snap").addEventListener("click", async function() {
 
 
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
-  context.drawImage(video, 0, 0, 640, 480);
-  var dataURL = canvas.toDataURL("image/png"),
-          dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-  //alert(img.src);
-  //console.log
-  //var bin64 = img.src.substring(img.src.indexOf("base64,") +7);
-  /*const [result] = await client.faceDetection(bin64);
-  //const faces = result.faceAnnotations;
-  console.log('Faces:');
-  faces.forEach((face, i) => {
-  console.log(`  Face #${i + 1}:`);
-  console.log(`    Joy: ${face.joyLikelihood}`);
-  console.log(`    Anger: ${face.angerLikelihood}`);
-  console.log(`    Sorrow: ${face.sorrowLikelihood}`);
-  console.log(`    Surprise: ${face.surpriseLikelihood}`);
+    context.drawImage(video, 0, 0, 640, 480);
+    var dataURL = canvas.toDataURL("image/png");
+    dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+    /*
+    alert(img.src);
+    var bin64 = img.src.substring(img.src.indexOf("base64,") +7);
+    console.log('bruh');
+    const [result] = await client.labelDetection('./examplefaces/smile.jpg');
+    const labels = result.labelAnnotations;
 
-  });*/
+    //const [result] = await client.faceDetection(bin64);
+    //const faces = result.faceAnnotations;
+    console.log('Faces:');
+    faces.forEach((face, i) => {
+    console.log(`  Face #${i + 1}:`);
+    console.log(`    Joy: ${face.joyLikelihood}`);
+    console.log(`    Anger: ${face.angerLikelihood}`);
+    console.log(`    Sorrow: ${face.sorrowLikelihood}`);
+    console.log(`    Surprise: ${face.surpriseLikelihood}`);
+    
+  }); */
   main(dataURL); 
 }); 
 

@@ -6,6 +6,14 @@
  * For more information, read
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
+var requirejs = require("requirejs"); 
+
+requirejs.config({
+  baseUrl: __dirname,
+  //load the mode modules to top level JS file 
+  //by passing the top level main.js require function to requirejs
+  nodeRequire: require
+});
 
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library
@@ -13,8 +21,8 @@ var cors = require('cors');
 var querystring = require('querystring');
 var cookieParser = require('cookie-parser');
 
-var client_id = '631c7cf134a64726b05bb60216865902'; // Your client id
-var client_secret = '8c091b27851444408a39e19ea2136a12'; // Your secret
+var client_id = '03b83696b89243aca1e6edf994e78581'; // Your client id
+var client_secret = 'd10e0c1ee7474cec92f8a6b8c6ad88be'; // Your secret
 var redirect_uri = 'http://localhost:8888/callback'; // Your redirect uri
 
 /**
