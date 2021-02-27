@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Time to VIBE OUT!</title>
+      <link rel="stylesheet" href="mainstyle.css" type="text/css">
+  </head>
+
+
+<body>
+<!--
+	Ideally these elements aren't created until it's confirmed that the
+	client supports video/camera, but for the sake of illustrating the
+	elements involved, they are created with markup (not JavaScript)
+-->
+
+<header>
+  
+  
+
+  <video id="video" width="640" height="480" autoplay></video>
+  <button id="snap">Snap Photo</button>
+  <canvas id="canvas" width="640" height="480"></canvas>
+  <a href="title.html">
+      <button class="home">
+        HOME
+      </button>
+    </a>
+    <a href="info.html">
+      <button class="inform">
+        INFO
+      </button>
+    </a>
+    <a href="/login">
+  <button class="recom">Recommendo Expresso!</button>
+    </a>
+    <script src="mainscript.js"></script>
+
+</header>
+<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script>
+  (function() {
+
+    /**
+     * Obtains parameters from the hash of the URL
+     * @return Object
+     */
+    function getHashParams() {
+      var hashParams = {};
+      var e, r = /([^&;=]+)=?([^&;]*)/g,
+          q = window.location.hash.substring(1);
+      while ( e = r.exec(q)) {
+         hashParams[e[1]] = decodeURIComponent(e[2]);
+      }
+      return hashParams;
+    }
+    var params = getHashParams();
+
+    var access_token = params.access_token,
+        refresh_token = params.refresh_token,
+        error = params.error,
+        items = params.items,
+        total = params.total;
+        id = params.id;
+      console.log(access_token);
+    var totalplaylists;
+    var userID;
+    var arrTracksUri = [];
+    var arrTracksID = [];
+    var arrTempo = [];
+    var arrHappy = [];
+    var arrSad = [];
+    var sad;
+    var happy;
+
+    if (error) {
+      alert('There was an error during the authentication');
+    } else {
+      if (access_token) {
+        $.ajax({
+            url: 'https://api.spotify.com/v1/me',
+            headers: {
+              'Authorization': 'Bearer ' + access_token
+            },
+            success: function(response) {
+              userID = response.id;
+              $.ajax({
+                            url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
+                            method: "POST",
+                            data: JSON.stringify({
+                              name: "VIBEZTEMP",
+                              public: "false"
+                            }),
+                            headers: {
+                              'Authorization': 'Bearer ' + access_token,
+                              'Content-Type': 'application/json'
+                            },
+                            success: function(response) {
+                              $.ajax({
+                                                url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
+                                                method: "POST",
+                                                data: JSON.stringify({
+                                                  name: "VIBEZSad",
+                                                  public: "false"
+                                                }),
+                                                headers: {
+                                                  'Authorization': 'Bearer ' + access_token,
+                                                  'Content-Type': 'application/json'
+                                                },
+                                                success: function(response) {}
+                                              });
+                                                            $.ajax({
+                                                url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
+                                                method: "POST",
+                                                data: JSON.stringify({
+                                                  name: "VIBEZHappy",
+                                                  public: "false"
+                                                }),
+                                                headers: {
+                                                  'Authorization': 'Bearer ' + access_token,
+                                                  'Content-Type': 'application/json'
+                                                },
+                                                success: function(response) {}
+                                              });
+              $.ajax({
+                  url: 'https://api.spotify.com/v1/me/playlists',
+                  headers: {
+                    'Authorization': 'Bearer ' + access_token
+                  },
+                  success: function(response) {
+                    totalplaylists = response.total;
+                    items = response.items;
+                    for(var i = 0; i < totalplaylists; i++){
+                      (function (i) {
+                        $.ajax({
+                            url: 'https://api.spotify.com/v1/playlists/' + items[i].id + '/tracks',
+                            headers: {
+                              'Authorization': 'Bearer ' + access_token
+                            },
+                            success: function(response) {
+                            if(response.total > 0){
+                              for(var j = 0; j < response.total; j++){
+                                if(arrTracksUri.length > 0){
+                                  if(response.items[j].track){
+                                  if(arrTracksUri.includes(response.items[j].track.uri)!=true){
+                                    arrTracksUri.push(response.items[j].track.uri);
+                                    arrTracksID.push(response.items[j].track.id);
+                                }
+                              }
+                            } else {
+                                  arrTracksUri.push(response.items[j].track.uri);
+                                  arrTracksID.push(response.items[j].track.id);
+                            }
+                          }
+                        }
+                        if(items[i].name=="VIBEZSad"){
+                          sad = items[i].id;
+                        }
+                        if(items[i].name=="VIBEZHappy"){
+                          happy = items[i].id;
+                        }
+                        if(items[i].name == "VIBEZTEMP"){
+                          $.ajax({
+                            url: 'https://api.spotify.com/v1/playlists/' + items[i].id + '/tracks',
+                            method: "POST",
+                            data: JSON.stringify({
+                              uris: [arrTracksUri[0],arrTracksUri[1],arrTracksUri[2],arrTracksUri[3],arrTracksUri[4],arrTracksUri[5],arrTracksUri[6],arrTracksUri[7],arrTracksUri[8],arrTracksUri[9],arrTracksUri[10],arrTracksUri[11]],
+                            }),
+                            headers: {
+                              'Authorization': 'Bearer ' + access_token,
+                              'Content-Type': 'application/json'
+                            },
+                            success: function(response) {
+                                console.log("Works!");
+                                for(var x = 0; x < 12; x++){
+                                  (function (x) {
+                                    $.ajax({
+                                        url: 'https://api.spotify.com/v1/audio-features/' + arrTracksID[x],
+                                        headers: {
+                                          'Authorization': 'Bearer ' + access_token
+                                        },
+                                        success: function(response) {
+                                          if(response.energy < 0.6){
+                                            arrSad.push(arrTracksUri[x]);
+                                          } else {
+                                            arrHappy.push(arrTracksUri[x]);
+                                          }
+                                          if(x == 11){
+                                          if(joy == 1){
+                                                  $.ajax({
+                                                      url: 'https://api.spotify.com/v1/playlists/' + happy + '/tracks',
+                                                      method: "POST",
+                                                      data: JSON.stringify({
+                                                        uris: [arrHappy[0],arrHappy[1],arrHappy[2],arrHappy[3],arrHappy[4]],
+                                                      }),
+                                                      headers: {
+                                                        'Authorization': 'Bearer ' + access_token,
+                                                        'Content-Type': 'application/json'
+                                                      },
+                                                      success: function(response) {
+                                                        console.log("happy");
+                                                }
+                                              });
+                                          } else {
+                                                  $.ajax({
+                                                      url: 'https://api.spotify.com/v1/playlists/' + sad + '/tracks',
+                                                      method: "POST",
+                                                      data: JSON.stringify({
+                                                        uris: [arrSad[0],arrSad[1],arrSad[2],arrSad[3],arrSad[4]],
+                                                      }),
+                                                      headers: {
+                                                        'Authorization': 'Bearer ' + access_token,
+                                                        'Content-Type': 'application/json'
+                                                      },
+                                                      success: function(response) {
+                                                        console.log("SAD HOMIE");
+                                                }
+                                              });
+                                          }
+                                        }
+                                        }
+                                      })
+                                    }
+                                  )(x)};
+                                
+                            }
+                          });
+                      }
+                      }
+                        });
+                      })(i);
+                    }
+                  }
+                });
+              }
+                          });
+              
+              $('#login').hide();
+              $('#loggedin').show();
+            }
+        });
+      } else {
+          // render initial screen
+          $('#login').show();
+          $('#loggedin').hide();
+      }
+    }
+  })();
+</script>
+</body>
+</html>
+
+
+
+<!--
+    <head>
+      <title>Time to VIBE OUT!</title>
+        <link rel="stylesheet" href="mainstyle.css" type="text/css">
+    </head>
+    <body>
+        <header>
+            <div>
+                <iframe src="https://open.spotify.com/embed/album/1DFixLWuPkv3KT3TnV35m3" width="300" height="380" frameborder="1" allowtransparency="true" allow="encrypted-media"></iframe>
+            </div>
+
+            <a href="title.html">
+                <button class="home">
+                  HOME
+                </button>
+              </a>
+              <a href="info.html">
+                <button class="inform">
+                  INFO
+                </button>
+              </a>
+              <a href="main.html">
+                  <button class="register">
+                      PLAY NOW!
+                  </button>
+              </a>
+
+        </header>
+    </body>
+
+</html>

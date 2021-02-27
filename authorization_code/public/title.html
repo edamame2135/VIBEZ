@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <meta charset="UTF-8">
+    <head>
+        <title>Welcome to VIBEZ!</title>
+        <link rel="stylesheet" href="style.css" type="text/css">
+        <script type="text/javascript" src="script.js"></script>
+    </head>
+    <body>
+        <header>
+            <canvas id="canvas"></canvas>
+            <div class="main">
+            </div>
+            <audio id="audio" loop></audio>
+            <div class="title">
+                <h1>VIBE OUT!</h1>
+            </div>
+            <div class="desu">
+              <h1>PLAY TUNES YOU VIBE TO!</h1>
+            </div>
+            <a href="title.html">
+              <button class="home">
+                HOME
+              </button>
+            </a>
+            <a href="info.html">
+              <button class="inform">
+                INFO
+              </button>
+            </a>
+            <a href="index.html">
+                <button class="register">
+                    PLAY NOW!
+                </button>
+            </a>
+            <script src="https://sdk.scdn.co/spotify-player.js"></script>
+            <script>
+              window.onSpotifyWebPlaybackSDKReady = () => {
+                const token = 'BQDMzfqLbNnpbtqDRNiJiYlN4WDsNbfrDl3871-HbUaN6WknZXe1F844-BRRxqA30Cv3RF5cbdM9TrpNGgl6zgVOO2rUBP6QrTSkwVaurlLhyE4gBZpVJNbuEls_Hn3NoiCIrFOYJpBojVzSNz7nlTNl7K7BMYu9qSgvtX30e5dAJWgF2nHoMBc';
+                const player = new Spotify.Player({
+                  name: 'VIBEZ Online Player',
+                  getOAuthToken: cb => { cb(token); }
+                });
+          
+                // Error handling
+                player.addListener('initialization_error', ({ message }) => { console.error(message); });
+                player.addListener('authentication_error', ({ message }) => { console.error(message); });
+                player.addListener('account_error', ({ message }) => { console.error(message); });
+                player.addListener('playback_error', ({ message }) => { console.error(message); });
+          
+                // Playback status updates
+                player.addListener('player_state_changed', state => { console.log(state); });
+          
+                // Ready
+                player.addListener('ready', ({ device_id }) => {
+                  console.log('Ready with Device ID', device_id);
+                });
+          
+                // Not Ready
+                player.addListener('not_ready', ({ device_id }) => {
+                  console.log('Device ID has gone offline', device_id);
+                });
+          
+                // Connect to the player!
+                player.connect();
+                
+          
+          
+                
+              };
+            </script>
+            <input type="file" id="thefile" accept="audio/*" />
+        </header>
+    </body>
+</html>
+
+
+
