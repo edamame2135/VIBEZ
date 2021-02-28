@@ -32,11 +32,13 @@ else if(navigator.getUserMedia) { // Standard
     }, errBack);
 }
 */
+/*
 define(function (require) {
     const vision = require(['@google-cloud/vision']);
 })
-
-//const client = new vision.ImageAnnotatorClient();
+*/
+const vision = require('@google-cloud/vision');
+const client = new vision.ImageAnnotatorClient();
 // Elements for taking the snapshot
 
 
@@ -62,7 +64,7 @@ document.getElementById("snap").addEventListener("click", async function() {
     alert(img.src);
     var bin64 = img.src.substring(img.src.indexOf("base64,") +7);
     console.log('bruh');
-    const [result] = await client.labelDetection('./examplefaces/smile.jpg');
+    const [result] = await client.labelDetection(bin64);
     const labels = result.labelAnnotations;
 
     //const [result] = await client.faceDetection(bin64);
