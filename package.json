@@ -8,6 +8,7 @@
     "cookie-parser": "^1.4.4",
     "cors": "^2.8.4",
     "express": "^4.17.1",
+    "google-auth-library": "^7.0.2",
     "querystring": "~0.2.0",
     "request": "~2.83.0",
     "requirejs": "^2.3.6",

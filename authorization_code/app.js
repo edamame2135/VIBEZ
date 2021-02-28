@@ -7,27 +7,6 @@
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
 
-async function quickstart() {
-  const vision = require('@google-cloud/vision');
-  const client = new vision.ImageAnnotatorClient();
-
-  //var dataURL = canvas.toDataURL("image/png");
-  //dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-
-  const [result] = await client.faceDetection('./public/resources/sad.jpg');
-  const faces = result.faceAnnotations;
-
-  console.log('Faces:');
-  faces.forEach((face, i) => {
-  console.log(`  Face #${i + 1}:`);
-  console.log(`    Joy: ${face.joyLikelihood}`);
-  console.log(`    Anger: ${face.angerLikelihood}`);
-  console.log(`    Sorrow: ${face.sorrowLikelihood}`);
-  console.log(`    Surprise: ${face.surpriseLikelihood}`);
-  });
-}
-quickstart();
-
 
 var express = require('express'); // Express web server framework
 var request = require('request'); // "Request" library

@@ -16,7 +16,7 @@
 <header>
   
   
-
+  <img id="image" src="./resources/smile.jpg">
   <video id="video" width="640" height="480" autoplay></video>
   <button id="snap">Snap Photo</button>
   <canvas id="canvas" width="640" height="480"></canvas>
@@ -31,17 +31,18 @@
       </button>
     </a>
     <a href="/login">
-  <button class="recom">Recommendo Expresso!</button>
+  <button id="recom" disabled>Recommendo Expresso!</button>
     </a>
-    <script src="bundle.js"></script>
     <script src="mainscript.js"></script>
 
 </header>
 <script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.1/handlebars.min.js"></script>
 <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="spotify.js"></script>
+<!--
 <script>
   (function() {
-
+    console.log(joy);
     /**
      * Obtains parameters from the hash of the URL
      * @return Object
@@ -247,7 +248,7 @@
       }
     }
   })();
-</script>
+</script> -->
 </body>
 </html>
 
