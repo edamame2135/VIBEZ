@@ -129,7 +129,7 @@ document.getElementById("recom").addEventListener("click", async function (event
                                             })
                                             // sort the songs based on their tempo in increasing order
                                             tempo.sort(function (a, b) { return a[0] - b[0] });
-                                            var third = tempo.length/3;
+                                            var third = tempo.length / 3;
                                             console.log(tempo);
                                             // if happy, get the last third of songs in the list
                                             if (joy == 1) {
@@ -185,7 +185,6 @@ document.getElementById("recom").addEventListener("click", async function (event
             $('#loggedin').hide();
         }
     }
-
 });
 
 

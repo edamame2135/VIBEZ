@@ -5,9 +5,9 @@ var video = document.getElementById('video');
 
 
 // Get access to the camera!
-if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     // Not adding `{ audio: true }` since we only want video now
-    navigator.mediaDevices.getUserMedia({ video: true }).then(function(stream) {
+    navigator.mediaDevices.getUserMedia({ video: true }).then(function (stream) {
         //video.src = window.URL.createObjectURL(stream);
         video.srcObject = stream;
         video.play();
@@ -20,7 +20,7 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
 const img = new Image();
 // Trigger photo take
-document.getElementById("snap").addEventListener("click", async function() {
+document.getElementById("snap").addEventListener("click", async function () {
     document.getElementById("recom").removeAttribute("disabled");
     var canvas = document.getElementById('canvas');
     canvas.style.display = 'none';
@@ -28,18 +28,8 @@ document.getElementById("snap").addEventListener("click", async function() {
     context.drawImage(video, 0, 0, 640, 480);
     var dataURL = canvas.toDataURL("image/png");
     dataURL = dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-
-    /*
-    alert(img.src);
-    var bin64 = img.src.substring(img.src.indexOf("base64,") +7);
-    console.log('bruh');
-    
-  }); 
-  */
-
-  main(dataURL); 
-}); 
-
+    main(dataURL);
+});
 
 var mooddict = {
     "UNKNOWN": 0,
@@ -50,7 +40,6 @@ var mooddict = {
     "VERY_LIKELY": 5
 }
 
-
 // [START vision_face_detection_tutorial_imports]
 // By default, the client will authenticate using the service account file
 // specified by the GOOGLE_APPLICATION_CREDENTIALS environment variable and use
@@ -60,46 +49,46 @@ var mooddict = {
 
 
 // get the facial data from snapped picture
-async function main(bin){
-    let url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyARSU-ejllRwjQiO08h1FmGFwyuyicnMro"; 
+async function main(bin) {
+    let url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyARSU-ejllRwjQiO08h1FmGFwyuyicnMro";
     let data = {
-        "requests":[
-        {
-            "image":{
-                "content": bin
-              },
-            "features":[
+        "requests": [
             {
-                "type":"FACE_DETECTION",
-                "maxResults":10
+                "image": {
+                    "content": bin
+                },
+                "features": [
+                    {
+                        "type": "FACE_DETECTION",
+                        "maxResults": 10
+                    }
+                ]
             }
-            ]
-        }
         ]
     };
     async function getData(url, data) {
         let response = await fetch(url, {
-            method: 'POST', 
+            method: 'POST',
             headers: {
-            'Content-Type': 'application/json',
+                'Content-Type': 'application/json',
             },
             body: JSON.stringify(data),
         });
         let responseData = await response.json();
-        return responseData; 
+        return responseData;
     }
 
     let response = await getData(url, data);
-    console.log(response); 
-    let resolved = Promise.resolve(response); 
-    resolved.then(function(data) {
+    console.log(response);
+    let resolved = Promise.resolve(response);
+    resolved.then(function (data) {
         console.log(data.responses[0]["faceAnnotations"][0]);
         var joyval = `${data.responses[0]["faceAnnotations"][0].joyLikelihood}`;
         var sadval = `${data.responses[0]["faceAnnotations"][0].sorrowLikelihood}`;
         // sad
-        if(mooddict[joyval] < mooddict[sadval]){
+        if (mooddict[joyval] < mooddict[sadval]) {
             joy = 0;
-        // happy
+            // happy
         } else if (mooddict[joyval] > mooddict[sadval]) {
             joy = 1;
         }
