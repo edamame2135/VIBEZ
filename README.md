@@ -20,6 +20,8 @@ To do so, go to [your Spotify for Developers Dashboard](https://beta.developer.s
 
 Once you have created your app, replace the `client_id`, `redirect_uri` and `client_secret` in app.js with the ones you get from My Applications.
 
+You will also need to get your own Google Vision API key from Google Cloud Console and replace `url` in mainscript.js with it.
+
 ## Running the application
 
     $ cd authorization_code
