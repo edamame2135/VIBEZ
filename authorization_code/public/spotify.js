@@ -90,7 +90,7 @@ document.getElementById("recom").addEventListener("click", async function (event
                             playlistid = response["id"];
                             console.log(playlistid);
                             $.ajax({
-                                url: 'https://api.spotify.com/v1/me/top/artists?limit=8&offset=0&time_range=medium_term',
+                                url: 'https://api.spotify.com/v1/me/top/artists?limit=9&offset=0&time_range=medium_term',
                                 method: "GET",
                                 headers: {
                                     'Authorization': 'Bearer ' + access_token,
@@ -110,20 +110,16 @@ document.getElementById("recom").addEventListener("click", async function (event
                                        
                                         var songIDs = [];
                                         var trackarr = [];
-                   
+                                        console.log(arguments);
                                         $.each(arguments, function (i, val) {
                                             trackarr.push(JSON.parse(JSON.stringify(val[0]))["tracks"]);
                                         })
                                         trackarr.forEach(function (tracks) {
                                             tracks.forEach(function (track) {
-                                                if (track["album"]["album_type"] == "album") {
-                                                    songIDs.push(track["uri"].substring(14));
-                                                }
-                                                else {
-                                                    songIDs.push(track["album"]["uri"].substring(14));
-                                                }
+                                                songIDs.push(track["uri"].substring(14));
                                             });
                                         });
+                                        //console.log(songIDs);
                                         
                                         // map the songs to their audio analyses
                                         songAudioMap = songIDs.map(function (x) { return getAudiodata(x, access_token) });
