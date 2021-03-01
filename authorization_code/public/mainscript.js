@@ -45,7 +45,7 @@ else if(navigator.getUserMedia) { // Standard
 const img = new Image();
 // Trigger photo take
 document.getElementById("snap").addEventListener("click", async function() {
-    document.getElementById("recom").removeAttribute("disabled");
+    //document.getElementById("recom").removeAttribute("disabled");
     var canvas = document.getElementById('canvas');
     var context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, 640, 480);

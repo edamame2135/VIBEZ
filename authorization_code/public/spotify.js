@@ -1,4 +1,33 @@
-document.getElementById("recom").addEventListener("click", async function () {
+function resolveFailure() {
+    return [{error: true}, 1, 1];
+}
+function getAudiodata(id, access_token) {
+    return $.ajax({
+        url: 'https://api.spotify.com/v1/audio-features/' + id,
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + access_token,
+        }
+    })
+    .then(data => data)
+    .catch(resolveFailure);
+}
+
+
+function toptracks(id, access_token) {
+    console.log("save me");
+    return $.ajax({
+        url: 'https://api.spotify.com/v1/artists/' + id + '/top-tracks?market=US',
+        method: "GET",
+        headers: {
+            'Authorization': 'Bearer ' + access_token,
+            'Content-Type': 'application/json'
+        }
+    });
+}
+
+document.getElementById("recom").addEventListener("click", async function (event) {
+    event.preventDefault();
     console.log(joy);
     /**
      * Obtains parameters from the hash of the URL
@@ -31,11 +60,20 @@ document.getElementById("recom").addEventListener("click", async function () {
     var arrSad = [];
     var sad;
     var happy;
+    var playlistName;
+
+    if (joy == 1) {
+        playlistName = "VIBEZHappy";
+    }
+    else {
+        playlistName = "VIBEZSad";
+    }
 
     if (error) {
         alert('There was an error during the authentication');
     } else {
         if (access_token) {
+            // if more happy than sad
             $.ajax({
                 url: 'https://api.spotify.com/v1/me',
                 headers: {
@@ -44,165 +82,124 @@ document.getElementById("recom").addEventListener("click", async function () {
                 success: function (response) {
                     userID = response.id;
                     $.ajax({
+                        // create playlist
                         url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
                         method: "POST",
                         data: JSON.stringify({
-                            name: "VIBEZTEMP",
+                            name: playlistName,
                             public: "false"
                         }),
                         headers: {
                             'Authorization': 'Bearer ' + access_token,
                             'Content-Type': 'application/json'
                         },
+                        // get top artists from user
                         success: function (response) {
+                            playlistid = response["id"];
+                            console.log(playlistid);
                             $.ajax({
-                                url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
-                                method: "POST",
-                                data: JSON.stringify({
-                                    name: "VIBEZSad",
-                                    public: "false"
-                                }),
+                                url: 'https://api.spotify.com/v1/me/top/artists?limit=10&offset=0&time_range=medium_term',
+                                method: "GET",
                                 headers: {
                                     'Authorization': 'Bearer ' + access_token,
                                     'Content-Type': 'application/json'
                                 },
-                                success: function (response) { }
-                            });
-                            $.ajax({
-                                url: 'https://api.spotify.com/v1/users/' + userID + '/playlists',
-                                method: "POST",
-                                data: JSON.stringify({
-                                    name: "VIBEZHappy",
-                                    public: "false"
-                                }),
-                                headers: {
-                                    'Authorization': 'Bearer ' + access_token,
-                                    'Content-Type': 'application/json'
-                                },
-                                success: function (response) { }
-                            });
-                            $.ajax({
-                                url: 'https://api.spotify.com/v1/me/playlists',
-                                headers: {
-                                    'Authorization': 'Bearer ' + access_token
-                                },
+                                // get the ids from top 10 songs from each top artist
                                 success: function (response) {
-                                    totalplaylists = response.total;
-                                    items = response.items;
-                                    for (var i = 0; i < totalplaylists; i++) {
-                                        (function (i) {
-                                            $.ajax({
-                                                url: 'https://api.spotify.com/v1/playlists/' + items[i].id + '/tracks',
-                                                headers: {
-                                                    'Authorization': 'Bearer ' + access_token
-                                                },
-                                                success: function (response) {
-                                                    if (response.total > 0) {
-                                                        for (var j = 0; j < response.total; j++) {
-                                                            if (arrTracksUri.length > 0) {
-                                                                if (response.items[j].track) {
-                                                                    if (arrTracksUri.includes(response.items[j].track.uri) != true) {
-                                                                        arrTracksUri.push(response.items[j].track.uri);
-                                                                        arrTracksID.push(response.items[j].track.id);
-                                                                    }
-                                                                }
-                                                            } else {
-                                                                arrTracksUri.push(response.items[j].track.uri);
-                                                                arrTracksID.push(response.items[j].track.id);
-                                                            }
-                                                        }
-                                                    }
-                                                    if (items[i].name == "VIBEZSad") {
-                                                        sad = items[i].id;
-                                                    }
-                                                    if (items[i].name == "VIBEZHappy") {
-                                                        happy = items[i].id;
-                                                    }
-                                                    if (items[i].name == "VIBEZTEMP") {
-                                                        $.ajax({
-                                                            url: 'https://api.spotify.com/v1/playlists/' + items[i].id + '/tracks',
-                                                            method: "POST",
-                                                            data: JSON.stringify({
-                                                                uris: [arrTracksUri[0], arrTracksUri[1], arrTracksUri[2], arrTracksUri[3], arrTracksUri[4], arrTracksUri[5], arrTracksUri[6], arrTracksUri[7], arrTracksUri[8], arrTracksUri[9], arrTracksUri[10], arrTracksUri[11]],
-                                                            }),
-                                                            headers: {
-                                                                'Authorization': 'Bearer ' + access_token,
-                                                                'Content-Type': 'application/json'
-                                                            },
-                                                            success: function (response) {
-                                                                console.log("Works!");
-                                                                for (var x = 0; x < 12; x++) {
-                                                                    (function (x) {
-                                                                        $.ajax({
-                                                                            url: 'https://api.spotify.com/v1/audio-features/' + arrTracksID[x],
-                                                                            headers: {
-                                                                                'Authorization': 'Bearer ' + access_token
-                                                                            },
-                                                                            success: function (response) {
-                                                                                if (response.energy < 0.6) {
-                                                                                    arrSad.push(arrTracksUri[x]);
-                                                                                } else {
-                                                                                    arrHappy.push(arrTracksUri[x]);
-                                                                                }
-                                                                                if (x == 11) {
-                                                                                    if (joy == 1) {
-                                                                                        $.ajax({
-                                                                                            url: 'https://api.spotify.com/v1/playlists/' + happy + '/tracks',
-                                                                                            method: "POST",
-                                                                                            data: JSON.stringify({
-                                                                                                uris: [arrHappy[0], arrHappy[1], arrHappy[2], arrHappy[3], arrHappy[4]],
-                                                                                            }),
-                                                                                            headers: {
-                                                                                                'Authorization': 'Bearer ' + access_token,
-                                                                                                'Content-Type': 'application/json'
-                                                                                            },
-                                                                                            success: function (response) {
-                                                                                                console.log("happy");
-                                                                                            }
-                                                                                        });
-                                                                                    } else {
-                                                                                        $.ajax({
-                                                                                            url: 'https://api.spotify.com/v1/playlists/' + sad + '/tracks',
-                                                                                            method: "POST",
-                                                                                            data: JSON.stringify({
-                                                                                                uris: [arrSad[0], arrSad[1], arrSad[2], arrSad[3], arrSad[4]],
-                                                                                            }),
-                                                                                            headers: {
-                                                                                                'Authorization': 'Bearer ' + access_token,
-                                                                                                'Content-Type': 'application/json'
-                                                                                            },
-                                                                                            success: function (response) {
-                                                                                                console.log("SAD HOMIE");
-                                                                                            }
-                                                                                        });
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        })
-                                                                    }
-                                                                    )(x)
-                                                                };
-
-                                                            }
-                                                        });
-                                                    }
+                                    console.log("yeahg aight");
+                                    var artistIDs = [];
+                                    var artists = JSON.parse(JSON.stringify(response))["items"];
+                                    artists.forEach(function (artist) {
+                                        artistIDs.push(artist["id"]);
+                                    });
+                                    $.when(toptracks(artistIDs[0], access_token), toptracks(artistIDs[1], access_token), toptracks(artistIDs[2], access_token), toptracks(artistIDs[3], access_token), toptracks(artistIDs[4], access_token),
+                                    toptracks(artistIDs[5], access_token), toptracks(artistIDs[6], access_token), toptracks(artistIDs[7], access_token), toptracks(artistIDs[8], access_token), toptracks(artistIDs[9], access_token)).done(function(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
+                                        console.log("are u srs");
+                                        var songIDs = [];
+                                        var trackarr = [];
+                                        trackarr.push(JSON.parse(JSON.stringify(t1[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t2[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t3[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t4[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t5[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t6[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t7[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t8[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t9[0]))["tracks"]);
+                                        trackarr.push(JSON.parse(JSON.stringify(t10[0]))["tracks"]);
+                                        trackarr.forEach(function (tracks) {
+                                            tracks.forEach(function (track) {
+                                                if (track["album"]["album_type"] == "album") {
+                                                    songIDs.push(track["uri"].substring(14));
+                                                }
+                                                else {
+                                                    songIDs.push(track["album"]["uri"].substring(14));
                                                 }
                                             });
-                                        })(i);
-                                    }
+                                        });
+                                        console.log(songIDs);
+                                        
+                                        songAudioMap = songIDs.map(function(x) {return getAudiodata(x, access_token)});
+                                        $.when.apply($, songAudioMap).then(function(data) {
+                                            tempo = []
+                                            data.forEach(function(respo) {
+                                                tempo.push([respo["tempo"], respo["uri"]]);
+                                            });
+                                            tempo.sort(function(a, b) {return a[1] - b[1]});
+                                            if(joy == 1) {
+                                                tempo = songtempos.slice(80);
+                                            }
+                                            else {
+                                                tempo = songtempos.slice(0, 20);
+                                            }
+                                            
+                                            tempo.map(function(x) {return x[1]});
+                                            
+                                                $.ajax({
+                                                    url: 'https://api.spotify.com/v1/playlists/' + playlistid +'/tracks',
+                                                    method: "POST",
+                                                    headers: {
+                                                        'Authorization': 'Bearer ' + access_token,
+                                                        'Content-Type': 'application/json'
+                                                    },
+                                                    data: {
+                                                        'uris': tempo
+                                                    }
+                                                });
+                                            
+
+                                        });
+                                        
+                                    });
+                                },
+                                error: function(jqHXR, e) {
+                                    console.log(jqHXR.status);
                                 }
                             });
+                         },
+                         error: function(jqHXR, e) {
+                            console.log(jqHXR.status);
                         }
                     });
 
-                    $('#login').hide();
-                    $('#loggedin').show();
+                    //$('#login').hide();
+                    //$('#loggedin').show();
+                },
+                error: function(jqHXR, e) {
+                    console.log(jqHXR.status);
                 }
             });
-        } else {
+
+        } // access token if end
+
+        else {
             // render initial screen
             $('#login').show();
             $('#loggedin').hide();
         }
     }
+
 });
+
+
+
