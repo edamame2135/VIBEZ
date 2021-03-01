@@ -50,7 +50,8 @@ var mooddict = {
 
 // get the facial data from snapped picture
 async function main(bin) {
-    let url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyARSU-ejllRwjQiO08h1FmGFwyuyicnMro";
+    // your visionj api key goes here
+    let url = "";
     let data = {
         "requests": [
             {
