@@ -58,10 +58,12 @@ document.getElementById("recom").addEventListener("click", async function (event
     if (joy == 1) {
         playlistName = "VIBEZHappy";
     }
-    else {
+    else if (joy == 0) {
         playlistName = "VIBEZSad";
     }
-
+    else {
+        playlistName = "VIBEZNeutral";
+    }
     if (error) {
         alert('There was an error during the authentication');
     } else {
@@ -96,18 +98,15 @@ document.getElementById("recom").addEventListener("click", async function (event
                                     'Authorization': 'Bearer ' + access_token,
                                     'Content-Type': 'application/json'
                                 },
-                                
                                 success: function (response) {
                                     var artistIDs = [];
                                     var artists = JSON.parse(JSON.stringify(response))["items"];
                                     artists.forEach(function (artist) {
                                         artistIDs.push(artist["id"]);
                                     });
-                                    
                                     // get the ids from top 10 songs from each top artist
                                     trackmap = artistIDs.map(function (x) { return toptracks(x, access_token) });
                                     $.when.apply($, trackmap).then(function () {
-                                       
                                         var songIDs = [];
                                         var trackarr = [];
                                         console.log(arguments);
@@ -119,8 +118,6 @@ document.getElementById("recom").addEventListener("click", async function (event
                                                 songIDs.push(track["uri"].substring(14));
                                             });
                                         });
-                                        //console.log(songIDs);
-                                        
                                         // map the songs to their audio analyses
                                         songAudioMap = songIDs.map(function (x) { return getAudiodata(x, access_token) });
                                         $.when.apply($, songAudioMap).then(function () {
@@ -132,15 +129,19 @@ document.getElementById("recom").addEventListener("click", async function (event
                                             })
                                             // sort the songs based on their tempo in increasing order
                                             tempo.sort(function (a, b) { return a[0] - b[0] });
-                                            
-                                            // if happy, get the last 20 songs in the list
+                                            var third = tempo.length/3;
                                             console.log(tempo);
+                                            // if happy, get the last third of songs in the list
                                             if (joy == 1) {
-                                                res = tempo.slice(-20);
+                                                res = tempo.slice(-third);
                                             }
-                                            // else get the first 20 songs
+                                            // else if sad get the first third
+                                            else if (joy == 0) {
+                                                res = tempo.slice(0, third);
+                                            }
+                                            // else get middle third
                                             else {
-                                                res = tempo.slice(0, 20);
+                                                res = tempo.slice(third, 2 * third);
                                             }
                                             res = res.map(function (x) { return x[1] });
                                             // add the songs to the playlist

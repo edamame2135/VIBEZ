@@ -1,9 +1,9 @@
 'use strict';
 var joy = "1";
 // Grab elements, create settings, etc.
-var video = document.getElementById('image');
+var video = document.getElementById('video');
 
-/*
+
 // Get access to the camera!
 if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     // Not adding `{ audio: true }` since we only want video now
@@ -13,40 +13,17 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         video.play();
     });
 }
-*/
-/* Legacy code below: getUserMedia
-else if(navigator.getUserMedia) { // Standard
-    navigator.getUserMedia({ video: true }, function(stream) {
-        video.src = stream;
-        video.play();
-    }, errBack);
-} else if(navigator.webkitGetUserMedia) { // WebKit-prefixed
-    navigator.webkitGetUserMedia({ video: true }, function(stream){
-        video.src = window.webkitURL.createObjectURL(stream);
-        video.play();
-    }, errBack);
-} else if(navigator.mozGetUserMedia) { // Mozilla-prefixed
-    navigator.mozGetUserMedia({ video: true }, function(stream){
-        video.srcObject = stream;
-        video.play();
-    }, errBack);
-}
-*/
 
 
 // Elements for taking the snapshot
 
-
-// [END vision_face_detection_tutorial_imports]
-// [START vision_face_detection_tutorial_client]
-// Creates a client
-//const client = new vision.ImageAnnotatorClient();
 
 const img = new Image();
 // Trigger photo take
 document.getElementById("snap").addEventListener("click", async function() {
     document.getElementById("recom").removeAttribute("disabled");
     var canvas = document.getElementById('canvas');
+    canvas.style.display = 'none';
     var context = canvas.getContext('2d');
     context.drawImage(video, 0, 0, 640, 480);
     var dataURL = canvas.toDataURL("image/png");
@@ -82,12 +59,7 @@ var mooddict = {
 
 
 
-
-/**
- * TODO(developer): Uncomment the following line before running the sample.
- */
-
-
+// get the facial data from snapped picture
 async function main(bin){
     let url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyARSU-ejllRwjQiO08h1FmGFwyuyicnMro"; 
     let data = {
@@ -124,10 +96,16 @@ async function main(bin){
         console.log(data.responses[0]["faceAnnotations"][0]);
         var joyval = `${data.responses[0]["faceAnnotations"][0].joyLikelihood}`;
         var sadval = `${data.responses[0]["faceAnnotations"][0].sorrowLikelihood}`;
+        // sad
         if(mooddict[joyval] < mooddict[sadval]){
             joy = 0;
-        } else {
+        // happy
+        } else if (mooddict[joyval] > mooddict[sadval]) {
             joy = 1;
+        }
+        // neutral
+        else {
+            joy = 2;
         }
     });
 }
