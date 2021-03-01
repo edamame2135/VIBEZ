@@ -1,10 +1,9 @@
 # Mood-based Music Recommendation App
-
+Built with JavaScript, Google Vision API, and Spotify API
 
 ## Installation
 
-Node.js and npm must be downloaded
-
+Node.js and npm must be installed.
 ### Using your own credentials
 You will need to register your app and get your own credentials from the Spotify for Developers Dashboard.
 
