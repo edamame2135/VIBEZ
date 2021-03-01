@@ -1,6 +1,8 @@
 function resolveFailure() {
-    return [{error: true}, 1, 1];
+    return "error";
 }
+
+// given a song uri, get audio analysis
 function getAudiodata(id, access_token) {
     return $.ajax({
         url: 'https://api.spotify.com/v1/audio-features/' + id,
@@ -9,13 +11,11 @@ function getAudiodata(id, access_token) {
             'Authorization': 'Bearer ' + access_token,
         }
     })
-    .then(data => data)
-    .catch(resolveFailure);
+        .then(data => data)
+        .catch(resolveFailure);
 }
-
-
+// given an artist id, get their top tracks
 function toptracks(id, access_token) {
-    console.log("save me");
     return $.ajax({
         url: 'https://api.spotify.com/v1/artists/' + id + '/top-tracks?market=US',
         method: "GET",
@@ -28,7 +28,6 @@ function toptracks(id, access_token) {
 
 document.getElementById("recom").addEventListener("click", async function (event) {
     event.preventDefault();
-    console.log(joy);
     /**
      * Obtains parameters from the hash of the URL
      * @return Object
@@ -51,17 +50,11 @@ document.getElementById("recom").addEventListener("click", async function (event
         total = params.total;
     id = params.id;
     console.log(access_token);
-    var totalplaylists;
     var userID;
-    var arrTracksUri = [];
-    var arrTracksID = [];
-    var arrTempo = [];
-    var arrHappy = [];
-    var arrSad = [];
-    var sad;
-    var happy;
+
     var playlistName;
 
+    // name playlist based on the mood
     if (joy == 1) {
         playlistName = "VIBEZHappy";
     }
@@ -73,7 +66,6 @@ document.getElementById("recom").addEventListener("click", async function (event
         alert('There was an error during the authentication');
     } else {
         if (access_token) {
-            // if more happy than sad
             $.ajax({
                 url: 'https://api.spotify.com/v1/me',
                 headers: {
@@ -98,35 +90,30 @@ document.getElementById("recom").addEventListener("click", async function (event
                             playlistid = response["id"];
                             console.log(playlistid);
                             $.ajax({
-                                url: 'https://api.spotify.com/v1/me/top/artists?limit=10&offset=0&time_range=medium_term',
+                                url: 'https://api.spotify.com/v1/me/top/artists?limit=8&offset=0&time_range=medium_term',
                                 method: "GET",
                                 headers: {
                                     'Authorization': 'Bearer ' + access_token,
                                     'Content-Type': 'application/json'
                                 },
-                                // get the ids from top 10 songs from each top artist
+                                
                                 success: function (response) {
-                                    console.log("yeahg aight");
                                     var artistIDs = [];
                                     var artists = JSON.parse(JSON.stringify(response))["items"];
                                     artists.forEach(function (artist) {
                                         artistIDs.push(artist["id"]);
                                     });
-                                    $.when(toptracks(artistIDs[0], access_token), toptracks(artistIDs[1], access_token), toptracks(artistIDs[2], access_token), toptracks(artistIDs[3], access_token), toptracks(artistIDs[4], access_token),
-                                    toptracks(artistIDs[5], access_token), toptracks(artistIDs[6], access_token), toptracks(artistIDs[7], access_token), toptracks(artistIDs[8], access_token), toptracks(artistIDs[9], access_token)).done(function(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
-                                        console.log("are u srs");
+                                    
+                                    // get the ids from top 10 songs from each top artist
+                                    trackmap = artistIDs.map(function (x) { return toptracks(x, access_token) });
+                                    $.when.apply($, trackmap).then(function () {
+                                       
                                         var songIDs = [];
                                         var trackarr = [];
-                                        trackarr.push(JSON.parse(JSON.stringify(t1[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t2[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t3[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t4[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t5[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t6[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t7[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t8[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t9[0]))["tracks"]);
-                                        trackarr.push(JSON.parse(JSON.stringify(t10[0]))["tracks"]);
+                   
+                                        $.each(arguments, function (i, val) {
+                                            trackarr.push(JSON.parse(JSON.stringify(val[0]))["tracks"]);
+                                        })
                                         trackarr.forEach(function (tracks) {
                                             tracks.forEach(function (track) {
                                                 if (track["album"]["album_type"] == "album") {
@@ -137,61 +124,64 @@ document.getElementById("recom").addEventListener("click", async function (event
                                                 }
                                             });
                                         });
-                                        console.log(songIDs);
                                         
-                                        songAudioMap = songIDs.map(function(x) {return getAudiodata(x, access_token)});
-                                        $.when.apply($, songAudioMap).then(function(data) {
+                                        // map the songs to their audio analyses
+                                        songAudioMap = songIDs.map(function (x) { return getAudiodata(x, access_token) });
+                                        $.when.apply($, songAudioMap).then(function () {
                                             tempo = []
-                                            data.forEach(function(respo) {
-                                                tempo.push([respo["tempo"], respo["uri"]]);
-                                            });
-                                            tempo.sort(function(a, b) {return a[1] - b[1]});
-                                            if(joy == 1) {
-                                                tempo = songtempos.slice(80);
+                                            $.each(arguments, function (i, val) {
+                                                if (val != "error") {
+                                                    tempo.push([val["tempo"], val["uri"]]);
+                                                }
+                                            })
+                                            // sort the songs based on their tempo in increasing order
+                                            tempo.sort(function (a, b) { return a[0] - b[0] });
+                                            
+                                            // if happy, get the last 20 songs in the list
+                                            console.log(tempo);
+                                            if (joy == 1) {
+                                                res = tempo.slice(-20);
                                             }
+                                            // else get the first 20 songs
                                             else {
-                                                tempo = songtempos.slice(0, 20);
+                                                res = tempo.slice(0, 20);
                                             }
-                                            
-                                            tempo.map(function(x) {return x[1]});
-                                            
-                                                $.ajax({
-                                                    url: 'https://api.spotify.com/v1/playlists/' + playlistid +'/tracks',
-                                                    method: "POST",
-                                                    headers: {
-                                                        'Authorization': 'Bearer ' + access_token,
-                                                        'Content-Type': 'application/json'
-                                                    },
-                                                    data: {
-                                                        'uris': tempo
-                                                    }
-                                                });
-                                            
+                                            res = res.map(function (x) { return x[1] });
+                                            // add the songs to the playlist
+                                            $.ajax({
+                                                url: 'https://api.spotify.com/v1/playlists/' + playlistid + '/tracks',
+                                                method: "POST",
+                                                headers: {
+                                                    'Authorization': 'Bearer ' + access_token,
+                                                    'Content-Type': 'application/json'
+                                                },
+                                                data: JSON.stringify({
+                                                    uris: res
+                                                })
+                                            });
+
 
                                         });
-                                        
+
                                     });
                                 },
-                                error: function(jqHXR, e) {
+                                error: function (jqHXR, e) {
                                     console.log(jqHXR.status);
                                 }
                             });
-                         },
-                         error: function(jqHXR, e) {
+                        },
+                        error: function (jqHXR, e) {
                             console.log(jqHXR.status);
                         }
                     });
-
-                    //$('#login').hide();
-                    //$('#loggedin').show();
+                    $('#login').hide();
+                    $('#loggedin').show();
                 },
-                error: function(jqHXR, e) {
+                error: function (jqHXR, e) {
                     console.log(jqHXR.status);
                 }
             });
-
         } // access token if end
-
         else {
             // render initial screen
             $('#login').show();

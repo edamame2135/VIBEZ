@@ -87,7 +87,6 @@ var mooddict = {
  * TODO(developer): Uncomment the following line before running the sample.
  */
 
-console.log("hello");
 
 async function main(bin){
     let url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyARSU-ejllRwjQiO08h1FmGFwyuyicnMro"; 
@@ -130,7 +129,6 @@ async function main(bin){
         } else {
             joy = 1;
         }
-        console.log(joy);
     });
 }
 
