@@ -90,7 +90,6 @@ document.getElementById("recom").addEventListener("click", async function (event
                         // get top artists from user
                         success: function (response) {
                             playlistid = response["id"];
-                            console.log(playlistid);
                             $.ajax({
                                 url: 'https://api.spotify.com/v1/me/top/artists?limit=9&offset=0&time_range=medium_term',
                                 method: "GET",
@@ -109,7 +108,6 @@ document.getElementById("recom").addEventListener("click", async function (event
                                     $.when.apply($, trackmap).then(function () {
                                         var songIDs = [];
                                         var trackarr = [];
-                                        console.log(arguments);
                                         $.each(arguments, function (i, val) {
                                             trackarr.push(JSON.parse(JSON.stringify(val[0]))["tracks"]);
                                         })

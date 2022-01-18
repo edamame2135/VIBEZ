@@ -1,9 +1,9 @@
 'use strict';
 var joy = "1";
 // Grab elements, create settings, etc.
-var video = document.getElementById('video');
+var video = document.getElementById('image');
 
-
+/*
 // Get access to the camera!
 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     // Not adding `{ audio: true }` since we only want video now
@@ -13,7 +13,7 @@ if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         video.play();
     });
 }
-
+*/
 
 // Elements for taking the snapshot
 
@@ -51,7 +51,7 @@ var mooddict = {
 // get the facial data from snapped picture
 async function main(bin) {
     // your visionj api key goes here
-    let url = "";
+    let url = "https://vision.googleapis.com/v1/images:annotate?key=AIzaSyARSU-ejllRwjQiO08h1FmGFwyuyicnMro";
     let data = {
         "requests": [
             {
